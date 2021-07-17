@@ -8,7 +8,7 @@ import os
 import shelve
 import zlib
 from multiprocessing import Pool
-
+import os
 import magic
 import numpy as np
 import pandas as pd
@@ -134,6 +134,14 @@ def download_image(row):
                 response.raw.decode_content = True
                 out_file.write(response.content)
             row["mimetype"] = magic.from_file(fname, mime=True)
+            if row["mimetype"] == 'image/jpeg':
+                new_name = fname + ".jpg" 
+            elif row["mimetype"] == 'image/png':
+                new_name = fname + ".png"
+            else:
+                gg = row['mimetype']
+                new_name = gg.spit('/')[1]
+            os.rename(fname,new_name)
             row["size"] = os.stat(fname).st_size
         except:
             # This is if it times out during a download or decode
@@ -145,7 +153,14 @@ def download_image(row):
 
 def open_tsv(fname, folder):
     print("Opening %s Data File..." % fname)
-    df = pd.read_csv(fname, sep="\t", names=["caption", "url"], usecols=range(1, 2))
+    df = pd.read_csv(fname, sep='\t',index_col=False,header=None,names=["caption","url"])
+    df["folder"] = folder
+    print("Processing", len(df), " Images:")
+    return df
+
+def open_tsv_train(fname, folder):
+    print("Opening %s Data File..." % fname)
+    df = pd.read_csv(fname, sep='\t',index_col=False,header=None,names=["url","caption"])
     df["folder"] = folder
     print("Processing", len(df), " Images:")
     return df
@@ -195,7 +210,7 @@ df.to_csv(
 print("Saved.")
 
 data_name = "training"
-df = open_tsv("Train_GCC-training.tsv", data_name)
+df = open_tsv_train("Train_GCC-training.tsv", data_name)
 df_multiprocess(
     df=df,
     processes=num_processes,
