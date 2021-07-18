@@ -123,6 +123,9 @@ def download_image(row):
         row["status"] = response.status_code
         # row['headers'] = dict(response.headers)
     except Exception as e:
+        print("============")
+        print(e)
+        print("============")
         # log errors later, set error as 408 timeout
         row["status"] = 408
         return row
@@ -134,6 +137,8 @@ def download_image(row):
                 response.raw.decode_content = True
                 out_file.write(response.content)
             row["mimetype"] = magic.from_file(fname, mime=True)
+            row["size"] = os.stat(fname).st_size
+            row["file"] = fname
             if row["mimetype"] == 'image/jpeg':
                 new_name = fname + ".jpg" 
             elif row["mimetype"] == 'image/png':
@@ -142,12 +147,10 @@ def download_image(row):
                 gg = row['mimetype']
                 new_name = gg.spit('/')[1]
             os.rename(fname,new_name)
-            row["size"] = os.stat(fname).st_size
-        except:
+        except Exception as e:
             # This is if it times out during a download or decode
             row["status"] = 408
             return row
-        row["file"] = fname
     return row
 
 
@@ -189,28 +192,7 @@ the user agent could fix some errors too maybe - not sure if any requests are re
 sites based on this.
 """
 data_name = "validation"
-df = open_tsv("Validation_GCC-1.1.0-Validation.tsv", data_name)
-df_multiprocess(
-    df=df,
-    processes=num_processes,
-    chunk_size=images_per_part,
-    func=download_image,
-    dataset_name=data_name,
-)
-df = df_from_shelve(
-    chunk_size=images_per_part, func=download_image, dataset_name=data_name
-)
-df.to_csv(
-    "downloaded_%s_report.tsv.gz" % data_name,
-    compression="gzip",
-    sep="\t",
-    header=False,
-    index=False,
-)
-print("Saved.")
-
-data_name = "training"
-df = open_tsv_train("Train_GCC-training.tsv", data_name)
+df = open_tsv("/content/drive/MyDrive/Validation_GCC-1.1.0-Validation.tsv", data_name)
 df_multiprocess(
     df=df,
     processes=num_processes,
