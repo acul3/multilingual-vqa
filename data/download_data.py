@@ -123,9 +123,6 @@ def download_image(row):
         row["status"] = response.status_code
         # row['headers'] = dict(response.headers)
     except Exception as e:
-        print("============")
-        print(e)
-        print("============")
         # log errors later, set error as 408 timeout
         row["status"] = 408
         return row
@@ -191,8 +188,8 @@ for HTTP errors. Around 10-11% of images are gone, based on validation set resul
 the user agent could fix some errors too maybe - not sure if any requests are rejected by
 sites based on this.
 """
-data_name = "validation"
-df = open_tsv("/content/drive/MyDrive/Validation_GCC-1.1.0-Validation.tsv", data_name)
+data_name = "training"
+df = open_tsv_train("Train_GCC-training.tsv", data_name)
 df_multiprocess(
     df=df,
     processes=num_processes,
