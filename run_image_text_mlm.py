@@ -15,10 +15,10 @@
 # limitations under the License.
 """Script to run Image-Text Masked LM"""
 import json
+import os
 os.environ['HF_HOME'] = '/media/storage/huggingface/'
 import logging
 import math
-import os
 import shutil
 import time
 from dataclasses import dataclass, field
