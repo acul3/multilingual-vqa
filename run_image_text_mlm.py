@@ -261,30 +261,18 @@ class ImageTextDataset(VisionDataset):
 
     def _load_image(self, idx: int):
         path = self.image_paths[idx]
-        try:
-            img = read_image(os.path.join(self.root, path), mode=ImageReadMode.RGB)
-        except Exception:
-            image = Image.open(os.path.join(self.root, path))
-            imga = image.convert('RGB')
-            imga.save(os.path.join(self.root, path))
-            img = read_image(os.path.join(self.root, path), mode=ImageReadMode.RGB)
+        img = read_image(os.path.join(self.root, path), mode=ImageReadMode.RGB)
         return img
 
     def _load_target(self, idx):
         return self.captions[idx]
 
     def __getitem__(self, index: int):
-        try:
-            image = self._load_image(index)
-            target = str(self._load_target(index))
+        image = self._load_image(index)
+        target = str(self._load_target(index))
 
-            if self.transforms is not None:
-                image, target = self.transforms(image, target)
-        except Exception as e:
-            image = None
-            target = None
-            print('GAGAAL')
-            print(self.image_paths[index])
+        if self.transforms is not None:
+            image, target = self.transforms(image, target)
         return image, target
 
     def __len__(self) -> int:
