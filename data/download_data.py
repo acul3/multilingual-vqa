@@ -142,7 +142,7 @@ def download_image(row):
                 new_name = fname + ".png"
             else:
                 gg = row['mimetype']
-                new_name = gg.spit('/')[1]
+                new_name = fname + "." + gg.spit('/')[1]
             os.rename(fname,new_name)
         except Exception as e:
             # This is if it times out during a download or decode

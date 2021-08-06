@@ -78,12 +78,12 @@ class ModelArguments:
     )
 
     bert_name_or_path: Optional[str] = field(
-        default="bert-base-multilingual-uncased",
+        default="indobenchmark/indobert-large-p2",
         metadata={"help": "The bert model checkpoint for weights initialization."},
     )
 
     bert_tokenizer_name: Optional[str] = field(
-        default="bert-base-multilingual-uncased",
+        default="indobenchmark/indobert-large-p2",
         metadata={
             "help": "Pretrained BERT tokenizer name or path if not the same as model_name"
         },
@@ -121,7 +121,7 @@ class DataTrainingArguments:
     """
 
     data_dir: Optional[str] = field(
-        default="./images/",
+        default="images/",
         metadata={"help": "The data directory containing input files."},
     )
     train_file: Optional[str] = field(
@@ -247,7 +247,7 @@ class ImageTextDataset(VisionDataset):
 
         image_paths = []
         captions = []
-        for idx, img_file in enumerate(examples["image_file"].values):
+        for idx, img_file in enumerate(examples["image_path"].values):
             if os.path.exists(os.path.join(self.root, img_file)):
                 image_paths.append(img_file)
                 captions.append(examples["caption"].values[idx])
