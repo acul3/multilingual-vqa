@@ -15,10 +15,9 @@
 # limitations under the License.
 """Script to run Image-Text Masked LM"""
 import json
-import os
-os.environ['HF_HOME'] = '/media/storage/huggingface/'
 import logging
 import math
+import os
 import shutil
 import time
 from dataclasses import dataclass, field
@@ -205,8 +204,8 @@ class Transform(torch.nn.Module):
             CenterCrop(image_size),
             ConvertImageDtype(torch.float),
             Normalize(
-                (0.48145466),
-                (0.26862954),
+                (0.48145466, 0.4578275, 0.40821073),
+                (0.26862954, 0.26130258, 0.27577711),
             ),
         )
 
@@ -262,7 +261,8 @@ class ImageTextDataset(VisionDataset):
 
     def _load_image(self, idx: int):
         path = self.image_paths[idx]
-        return Image.open(os.path.join(self.root, path))
+        img = Image.open(os.path.join(self.root, path))
+        return img.convert('RGB')
 
     def _load_target(self, idx):
         return self.captions[idx]
