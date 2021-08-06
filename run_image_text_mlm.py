@@ -41,6 +41,7 @@ from flax.training.checkpoints import restore_checkpoint, save_checkpoint
 from flax.training.common_utils import get_metrics, onehot, shard, shard_prng_key
 from torchvision.datasets import VisionDataset
 from torchvision.io import ImageReadMode, read_image
+from PIL import Image
 from torchvision.datasets.folder import default_loader
 from torchvision.transforms import CenterCrop, ConvertImageDtype, Normalize, Resize
 from torchvision.transforms.functional import InterpolationMode
@@ -204,8 +205,8 @@ class Transform(torch.nn.Module):
             CenterCrop(image_size),
             ConvertImageDtype(torch.float),
             Normalize(
-                (0.48145466, 0.4578275, 0.40821073),
-                (0.26862954, 0.26130258, 0.27577711),
+                (0.48145466),
+                (0.26862954),
             ),
         )
 
@@ -261,7 +262,7 @@ class ImageTextDataset(VisionDataset):
 
     def _load_image(self, idx: int):
         path = self.image_paths[idx]
-        return read_image(os.path.join(self.root, path),mode=ImageReadMode.RGB)
+        return Image.open(os.path.join(self.root, path))
 
     def _load_target(self, idx):
         return self.captions[idx]
