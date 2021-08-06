@@ -267,12 +267,17 @@ class ImageTextDataset(VisionDataset):
         return self.captions[idx]
 
     def __getitem__(self, index: int):
-        image = self._load_image(index)
-        target = str(self._load_target(index))
+        try:
+            image = self._load_image(index)
+            target = str(self._load_target(index))
 
-        if self.transforms is not None:
-            image, target = self.transforms(image, target)
-
+            if self.transforms is not None:
+                image, target = self.transforms(image, target)
+        except Exception as e:
+            image = None
+            target = None
+            print('GAGAAL')
+            print(self.image_paths[index])
         return image, target
 
     def __len__(self) -> int:
