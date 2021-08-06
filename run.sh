@@ -8,11 +8,11 @@ python run_image_text_mlm.py \
  --save_steps 5000 \
  --num_train_epochs 6\
  --eval_steps 2500\
- --logging_steps 500\
+ --logging_steps 1000\
  --save_total_limit 5\
  --per_device_train_batch_size 56\
  --per_device_eval_batch_size 56\
- --warmup_steps 2500\
+ --warmup_steps 500\
  --learning_rate 0.008
 
 
