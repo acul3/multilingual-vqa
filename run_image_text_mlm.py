@@ -21,7 +21,7 @@ import os
 import shutil
 import time
 from dataclasses import dataclass, field
-
+from torchvision import transforms
 # You can also adapt this script on your own masked language modeling task. Pointers for this are left as comments.
 from pathlib import Path
 from typing import Callable, Dict, Optional, Tuple
@@ -262,7 +262,8 @@ class ImageTextDataset(VisionDataset):
     def _load_image(self, idx: int):
         path = self.image_paths[idx]
         img = Image.open(os.path.join(self.root, path))
-        return img.convert('RGB')
+        img = transforms.ToTensor()(img).convert("RGB")
+        return img
 
     def _load_target(self, idx):
         return self.captions[idx]
