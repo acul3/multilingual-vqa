@@ -15,6 +15,7 @@
 # limitations under the License.
 """Script to run Image-Text Masked LM"""
 import json
+os.environ['HF_HOME'] = '/media/storage/huggingface/'
 import logging
 import math
 import os
@@ -40,6 +41,7 @@ from flax.training.checkpoints import restore_checkpoint, save_checkpoint
 from flax.training.common_utils import get_metrics, onehot, shard, shard_prng_key
 from torchvision.datasets import VisionDataset
 from torchvision.io import ImageReadMode, read_image
+from torchvision.datasets.folder import default_loader
 from torchvision.transforms import CenterCrop, ConvertImageDtype, Normalize, Resize
 from torchvision.transforms.functional import InterpolationMode
 from tqdm import tqdm
@@ -259,7 +261,7 @@ class ImageTextDataset(VisionDataset):
 
     def _load_image(self, idx: int):
         path = self.image_paths[idx]
-        return read_image(os.path.join(self.root, path), mode=ImageReadMode.RGB)
+        return default_loader(os.path.join(self.root, path))
 
     def _load_target(self, idx):
         return self.captions[idx]
