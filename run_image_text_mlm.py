@@ -262,7 +262,8 @@ class ImageTextDataset(VisionDataset):
     def _load_image(self, idx: int):
         path = self.image_paths[idx]
         img = Image.open(os.path.join(self.root, path))
-        img = transforms.ToTensor()(img).convert("RGB")
+        img = img.convert('RGB')
+        img = transforms.ToTensor()(img).unsqueeze_(0)
         return img
 
     def _load_target(self, idx):
