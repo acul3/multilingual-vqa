@@ -261,7 +261,14 @@ class ImageTextDataset(VisionDataset):
 
     def _load_image(self, idx: int):
         path = self.image_paths[idx]
-        return read_image(os.path.join(self.root, path), mode=ImageReadMode.RGB)
+        try:
+            img = read_image(os.path.join(self.root, path), mode=ImageReadMode.RGB)
+        except Exception:
+            image = Image.open(os.path.join(self.root, path))
+            imga = image.convert('RGB')
+            imga.save(os.path.join(self.root, path))
+            img = read_image(os.path.join(self.root, path), mode=ImageReadMode.RGB)
+        return img
 
     def _load_target(self, idx):
         return self.captions[idx]
