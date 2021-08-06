@@ -62,7 +62,7 @@ from models.flax_clip_vision_bert.configuration_clip_vision_bert import (
 from models.flax_clip_vision_bert.modeling_clip_vision_bert import (
     FlaxCLIPVisionBertForMaskedLM,
 )
-
+import wandb
 from PIL import ImageFile
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -439,6 +439,12 @@ def write_eval_metric(summary_writer, eval_metrics, step):
     for metric_name, value in eval_metrics.items():
         summary_writer.scalar(f"eval_{metric_name}", value, step)
 
+def wandb_log(metrics, step=None, prefix=None):
+    if jax.process_index() == 0:
+        log_metrics = {f'{prefix}/{k}' if prefix is not None else k: jax.device_get(v) for k,v in metrics.items()}
+        if step is not None:
+            log_metrics['train/step'] = step
+        wandb.log(log_metrics)
 
 def create_learning_rate_fn(
     train_ds_size: int,
@@ -570,6 +576,17 @@ def main():
             "Use --overwrite_output_dir to overcome."
         )
 
+
+    wandb.init(
+        entity='munggok',
+        project='dalle-indo',
+        job_type='Seq2SeqVQGAN',
+        config=parser.parse_args()
+    )
+
+    # set default x-axis as 'train/step'
+    wandb.define_metric('train/step')
+    wandb.define_metric('*', step_metric='train/step')
     # TODO: Need to fix this
     # Setup logging
     logging.basicConfig(
@@ -895,6 +912,7 @@ def main():
             if cur_step % training_args.logging_steps == 0 and cur_step > 0:
                 # Save metrics
                 train_metric = jax_utils.unreplicate(train_metric)
+                wandb_log(train_metric, step=cur_step, prefix='train')
                 train_time += time.time() - train_start
                 if has_tensorboard and jax.process_index() == 0:
                     write_train_metric(
@@ -933,7 +951,7 @@ def main():
                 eval_metrics = jax.tree_map(jnp.sum, eval_metrics)
                 eval_normalizer = eval_metrics.pop("normalizer")
                 eval_metrics = jax.tree_map(lambda x: x / eval_normalizer, eval_metrics)
-
+                wandb_log(eval_metrics, step=cur_step, prefix='eval')
                 # Update progress bar
                 epochs.write(
                     f"Eval at Step: {cur_step} (Loss: {eval_metrics['loss']}, Acc: {eval_metrics['accuracy']})"

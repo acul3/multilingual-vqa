@@ -5,9 +5,9 @@ python run_image_text_mlm.py \
  --data_dir images \
  --train_file train_vqa_final.tsv\
  --validation_file val_vqa_final.tsv\
- --save_steps 10000 \
+ --save_steps 5000 \
  --num_train_epochs 6\
- --eval_steps 10000\
+ --eval_steps 2500\
  --logging_steps 500\
  --save_total_limit 5\
  --per_device_train_batch_size 56\
