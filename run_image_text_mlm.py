@@ -261,7 +261,7 @@ class ImageTextDataset(VisionDataset):
 
     def _load_image(self, idx: int):
         path = self.image_paths[idx]
-        return default_loader(os.path.join(self.root, path))
+        return read_image(os.path.join(self.root, path))
 
     def _load_target(self, idx):
         return self.captions[idx]
