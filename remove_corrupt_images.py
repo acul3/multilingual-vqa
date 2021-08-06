@@ -30,7 +30,7 @@ print(initial_count)
 for idx, image_file in enumerate(path):
     check_image.remote(image_file)
     # check_image(image_file)
-    #print(idx)
+    print(image_file)
 final_count = len(os.listdir(path))
 
 print(initial_count, final_count)
